@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        html,
+        body,
+        .main-container {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .input-container {
+            background: #0d0d14;
+            height: 65%;
+        }
+        
+        .input-container textarea {
+            height: 100%;
+            width: 100%;
+            resize: none;
+            background: none;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 17px;
+            font-family: monospace;
+        }
+        
+        .bottom-container {
+            height: 35%;
+        }
+        
+        .controls-container {
+            height: 30px;
+            width: 100%;
+            border-top: 1px solid #444464;
+            background: #1f1f2e;
+            padding: 0 20px;
+        }
+        
+        .output-container {
+            border-top: 1px solid #444464;
+            background: #1f1f2e;
+            height: calc(100% - 30px);
+            color: white;
+            font-size: 14px;
+            padding: 10px 20px;
+            font-family: monospace;
+        }
+        
+        .output-container span.error {
+            color: red;
+        }
+        
+        button {
+            background: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid grey;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main-container">
+        <div class="input-container">
+            <textarea id="textData"></textarea>
+        </div>
+        <div class="bottom-container">
+            <div class="controls-container">
+                <button type="button" onclick="compile()">Run</button>
+            </div>
+            <div class="output-container">
+                <span></span>
+            </div>
+        </div>
+    </main>
+
+    <script src="/libs/socket.io/socket.io.min.js"></script>
+    <script>
+        const socket = io()
+
+        socket.on('output', text => {
+            document.querySelector('.output-container span').innerText = text
+            document.querySelector('.output-container span').classList.remove('error')
+        })
+
+        socket.on('output-error', err => {
+            document.querySelector('.output-container span').innerText = err
+            document.querySelector('.output-container span').classList.add('error')
+        })
+
+        function compile() {
+            const text = document.querySelector('#textData').value
+            socket.emit('input', text)
+        }
+    </script>
+</body>
+
+</html>
